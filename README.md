@@ -11,6 +11,16 @@ The project is intentionally simple:
 - no database server
 - reusable across datasets
 
+## First Setup
+
+On a new machine:
+
+1. copy `config/global.example.yaml` to `config/global.yaml`
+2. copy `config/datasets/psma5mm.example.yaml` to `config/datasets/psma5mm.yaml`
+3. edit the real runtime config files for that machine
+
+Tracked files in Git should remain reusable defaults, code, docs, and templates. Runtime config, registry state, generated reports, and run folders are intentionally local-only so a Linux server can `git pull` without conflicting with machine-specific paths or generated experiment state.
+
 ## Folder Structure
 
 ```text
@@ -82,6 +92,8 @@ This repository is developed locally but intended to be cloned to a Linux GPU se
 
 Before first use on the server:
 
+- copy `config/global.example.yaml` to `config/global.yaml`
+- copy `config/datasets/psma5mm.example.yaml` to `config/datasets/psma5mm.yaml`
 - edit `config/global.yaml`
 - edit dataset path config such as `config/datasets/psma5mm.yaml`
 - confirm `nnUNet_raw`, `nnUNet_preprocessed`, and `nnUNet_results` point to real Linux paths

@@ -56,11 +56,15 @@ def load_global_config() -> dict[str, Any]:
     """Load global configuration if available."""
     path = project_root() / "config" / "global.yaml"
     if not path.exists():
-        return {}
+        raise FileNotFoundError(
+            "Missing runtime config: "
+            f"{path}. Copy from {project_root() / 'config' / 'global.example.yaml'} "
+            "and edit it for this machine."
+        )
     with path.open("r", encoding="utf-8") as handle:
         payload = yaml.safe_load(handle) or {}
     if not isinstance(payload, dict):
-        return {}
+        raise ValueError(f"Expected YAML mapping in {path}")
     return payload
 
 

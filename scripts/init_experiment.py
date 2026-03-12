@@ -129,19 +129,23 @@ def resolve_dataset(root: Path, dataset_key: str) -> dict[str, Any]:
     if candidate.exists():
         return load_yaml(candidate)
 
-    for path in sorted(datasets_dir.glob("*.yaml")):
-        payload = load_yaml(path)
-        if payload.get("dataset_key") == dataset_key:
-            return payload
-
     raise FileNotFoundError(
-        f"Could not resolve dataset '{dataset_key}' in {datasets_dir}"
+        "Missing dataset runtime config: "
+        f"{candidate}. Copy from {datasets_dir / f'{dataset_key}.example.yaml'} "
+        "and edit it for this machine."
     )
 
 
 def load_defaults(root: Path) -> dict[str, Any]:
     """Load global configuration defaults."""
-    return load_yaml(root / "config" / "global.yaml")
+    path = root / "config" / "global.yaml"
+    if not path.exists():
+        raise FileNotFoundError(
+            "Missing runtime config: "
+            f"{path}. Copy from {root / 'config' / 'global.example.yaml'} "
+            "and edit it for this machine."
+        )
+    return load_yaml(path)
 
 
 def load_experiment_types(root: Path) -> dict[str, Any]:

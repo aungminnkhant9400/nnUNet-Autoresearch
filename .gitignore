@@ -2,9 +2,15 @@ __pycache__/
 *.pyc
 .venv/
 .env
+config/global.yaml
+config/datasets/*.yaml
+!config/datasets/*.example.yaml
+registry/*.jsonl
+registry/*.csv
+reports/*.md
+!reports/.gitkeep
 runs/*
 !runs/.gitkeep
-reports/generated/*
 *.log
 *.out
 *.err

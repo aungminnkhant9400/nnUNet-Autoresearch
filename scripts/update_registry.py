@@ -275,6 +275,7 @@ def main() -> int:
 
     root = project_root()
     registry_dir = root / "registry"
+    registry_dir.mkdir(parents=True, exist_ok=True)
     jsonl_path = registry_dir / "experiments.jsonl"
     leaderboard_path = registry_dir / "leaderboard.csv"
 
