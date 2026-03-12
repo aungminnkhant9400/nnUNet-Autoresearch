@@ -73,15 +73,15 @@ Implemented scripts:
 - `scripts/init_experiment.py`
 - `scripts/update_registry.py`
 - `scripts/build_report.py`
+- `scripts/launch_train.py`
 
 ## Phase 2
 
-Phase 2 execution scripts are intentionally stubbed in v1. They are safe placeholders with TODOs and do not launch jobs or mutate experiment state.
+Phase 2 execution support is still mostly stubbed in v1. `launch_train.py` is the first practical launcher; the remaining execution-oriented scripts are still placeholders.
 
 Placeholder scripts:
 
 - `scripts/status.py`
-- `scripts/launch_train.py`
 - `scripts/launch_predict.py`
 - `scripts/launch_postprocess.py`
 - `scripts/collect_metrics.py`
@@ -103,6 +103,28 @@ Before first use on the server:
 
 ```text
 init experiment -> update registry -> build report
+```
+
+## Launch Training
+
+`launch_train.py` resolves a training run folder, validates runtime config and metadata, writes the exact final `nnUNetv2_train` command into `command.sh`, and can either dry-run, launch in detached `tmux`, or run in the foreground.
+
+Dry-run:
+
+```bash
+python scripts/launch_train.py --exp exp_0001 --dry-run
+```
+
+Detached tmux launch:
+
+```bash
+python scripts/launch_train.py --exp exp_0001 --tmux
+```
+
+Foreground launch:
+
+```bash
+python scripts/launch_train.py --exp runs/exp_0001_baseline_fold0_3d_fullres
 ```
 
 PowerShell example:
