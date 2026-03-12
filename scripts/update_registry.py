@@ -7,6 +7,7 @@ import csv
 import io
 import json
 import os
+import sys
 import tempfile
 from pathlib import Path
 from typing import Any
@@ -76,6 +77,12 @@ def load_yaml(path: Path) -> dict[str, Any]:
     return payload
 
 
+def load_json(path: Path) -> Any:
+    """Load a JSON file safely."""
+    with path.open("r", encoding="utf-8") as handle:
+        return json.load(handle)
+
+
 def load_jsonl(path: Path) -> list[dict[str, Any]]:
     """Load JSONL records, skipping blank lines."""
     if not path.exists():
@@ -135,6 +142,34 @@ def nested_get(payload: dict[str, Any], *keys: str) -> Any:
             return ""
         current = current.get(key, "")
     return current
+
+
+def merge_metrics(meta: dict[str, Any], metrics_payload: Any) -> dict[str, Any]:
+    """Merge normalized metrics.json values into the in-memory meta record."""
+    if not isinstance(metrics_payload, dict):
+        raise ValueError("metrics.json must contain a top-level JSON object")
+
+    metrics = metrics_payload.get("metrics", {})
+    if not isinstance(metrics, dict):
+        raise ValueError("metrics.json must contain a 'metrics' object")
+
+    results = meta.get("results", {})
+    if not isinstance(results, dict):
+        raise ValueError("meta.yaml field 'results' must be a mapping before merging metrics")
+
+    merged = dict(meta)
+    merged_results = dict(results)
+    for key in (
+        "dice_mean",
+        "dice_median",
+        "hd95_mean",
+        "precision_mean",
+        "recall_mean",
+    ):
+        if key in metrics:
+            merged_results[key] = metrics.get(key)
+    merged["results"] = merged_results
+    return merged
 
 
 def normalize_cell(value: Any) -> Any:
@@ -272,6 +307,15 @@ def main() -> int:
     meta_path = normalize_meta_path(args.meta)
     meta = load_yaml(meta_path)
     validate_meta(meta)
+    metrics_path = meta_path.parent / "metrics.json"
+    if metrics_path.exists():
+        try:
+            meta = merge_metrics(meta, load_json(metrics_path))
+        except (OSError, json.JSONDecodeError, ValueError) as exc:
+            print(
+                f"Warning: could not merge metrics from {metrics_path}: {exc}",
+                file=sys.stderr,
+            )
 
     root = project_root()
     registry_dir = root / "registry"

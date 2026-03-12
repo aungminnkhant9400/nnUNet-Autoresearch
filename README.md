@@ -105,6 +105,8 @@ Before first use on the server:
 init experiment -> update registry -> build report
 ```
 
+If you run `collect_metrics.py`, run `update_registry.py` again afterward so the normalized metrics from `metrics.json` are synced into the registry and leaderboard.
+
 ## Launch Training
 
 `launch_train.py` resolves a training run folder, validates runtime config and metadata, writes the exact final `nnUNetv2_train` command into `command.sh`, and can either dry-run, launch in detached `tmux`, or run in the foreground.
