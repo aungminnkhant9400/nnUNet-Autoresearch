@@ -52,6 +52,7 @@ nnunet-autoresearch/
 |   |-- status.py
 |   |-- launch_train.py
 |   |-- launch_predict.py
+|   |-- evaluate_predictions.py
 |   |-- launch_postprocess.py
 |   `-- collect_metrics.py
 `-- templates/
@@ -75,12 +76,13 @@ Implemented scripts:
 - `scripts/build_report.py`
 - `scripts/launch_train.py`
 - `scripts/launch_predict.py`
+- `scripts/evaluate_predictions.py`
 - `scripts/status.py`
 - `scripts/collect_metrics.py`
 
 ## Phase 2
 
-Phase 2 execution support is still mostly stubbed in v1. `launch_train.py`, `launch_predict.py`, `status.py`, and `collect_metrics.py` are the first practical operational tools; the remaining execution-oriented scripts are still placeholders.
+Phase 2 execution support is still mostly stubbed in v1. `launch_train.py`, `launch_predict.py`, `evaluate_predictions.py`, `status.py`, and `collect_metrics.py` are the first practical operational tools; the remaining execution-oriented scripts are still placeholders.
 
 Placeholder scripts:
 
@@ -149,6 +151,28 @@ Foreground launch:
 
 ```bash
 python scripts/launch_predict.py --exp runs/exp_0004_fold0_validation_inference
+```
+
+## Evaluate Predictions
+
+`evaluate_predictions.py` evaluates one inference run against `labelsTr`, computes per-case binary Dice, and writes `evaluation.json` in the run folder. v1 computes binary Dice only and treats all nonzero voxels as foreground.
+
+Normal usage:
+
+```bash
+python scripts/evaluate_predictions.py --exp exp_0004
+```
+
+Verbose mode:
+
+```bash
+python scripts/evaluate_predictions.py --exp exp_0004 --verbose
+```
+
+JSON mode:
+
+```bash
+python scripts/evaluate_predictions.py --exp runs/exp_0004_fold0_validation_inference --json
 ```
 
 ## Inspect Status
