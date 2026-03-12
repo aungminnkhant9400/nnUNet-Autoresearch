@@ -1,0 +1,2 @@
+experiment_id,title,dataset_key,task_type,status,created_at,parent_experiment,primary_metric,dice_mean,dice_median,hd95_mean,precision_mean,recall_mean,verdict,trainer,configuration,fold,checkpoint,device,run_path
+exp_0001,Baseline fold0 3d_fullres,psma5mm,training,planned,2026-03-12T06:53:32+00:00,,dice,,,,,,pending,nnUNetTrainer,3d_fullres,0,,cuda:0,runs/exp_0001_baseline_fold0_3d_fullres

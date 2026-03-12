@@ -1,0 +1,31 @@
+dataset_key: "psma5mm"
+dataset_id: "Dataset301_PSMA5mm"
+description: "Whole-body PSMA PET/CT lesion segmentation dataset resampled to 5 mm spacing for nnU-Net v2 experiments."
+modalities:
+  "0": "CT"
+  "1": "PET"
+labels:
+  "0": "background"
+  "1": "psma_lesion"
+default_plan: "nnUNetPlans"
+evaluation:
+  primary_metric: "dice"
+  secondary_metrics:
+    - "hd95"
+    - "precision"
+    - "recall"
+  target_label: "psma_lesion"
+  cross_validation_folds:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+paths:
+  raw_images: "C:/data/psma5mm/raw/images"
+  raw_labels: "C:/data/psma5mm/raw/labels"
+  preprocessed_root: "C:/data/psma5mm/nnunet_preprocessed"
+  results_root: "C:/data/psma5mm/nnunet_results"
+notes:
+  - "Update path placeholders before first launch on a GPU server."
+  - "Edit labels and evaluation details if task definitions change."

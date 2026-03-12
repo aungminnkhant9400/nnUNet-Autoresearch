@@ -1,0 +1,19 @@
+training:
+  description: "Model training experiments for nnU-Net v2."
+  template: "templates/training.yaml"
+  default_status: "planned"
+  required_inputs: []
+
+inference:
+  description: "Prediction runs against an existing checkpoint."
+  template: "templates/inference.yaml"
+  default_status: "planned"
+  required_inputs:
+    - checkpoint
+
+postprocess:
+  description: "Postprocessing steps applied to prediction outputs."
+  template: "templates/postprocess.yaml"
+  default_status: "planned"
+  required_inputs:
+    - parent

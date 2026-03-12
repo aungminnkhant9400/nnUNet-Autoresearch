@@ -1,0 +1,11 @@
+experiment_type: "inference"
+defaults:
+  nnunet_version: "v2"
+  configuration: "3d_fullres"
+required:
+  - "dataset_key"
+  - "inputs.checkpoint"
+  - "goal.objective"
+notes:
+  - "Specify source checkpoint and prediction target split."
+  - "Keep inference outputs isolated from training artifacts."

@@ -1,0 +1,13 @@
+experiment_type: "training"
+defaults:
+  nnunet_version: "v2"
+  trainer: "nnUNetTrainer"
+  configuration: "3d_fullres"
+required:
+  - "dataset_key"
+  - "inputs.fold"
+  - "goal.objective"
+  - "goal.hypothesis"
+notes:
+  - "Review command.sh before launch."
+  - "Record the exact checkpoint policy in meta.yaml if customized."

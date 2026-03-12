@@ -1,0 +1,10 @@
+experiment_type: "postprocess"
+defaults:
+  nnunet_version: "v2"
+required:
+  - "dataset_key"
+  - "parent_experiment"
+  - "change.type"
+notes:
+  - "Describe the postprocessing rule clearly in change.details."
+  - "Track whether postprocessing improves precision or harms recall."

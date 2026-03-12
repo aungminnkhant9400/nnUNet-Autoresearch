@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+runs/*
+!runs/.gitkeep
+reports/generated/*
+*.log
+*.out
+*.err
+.DS_Store
