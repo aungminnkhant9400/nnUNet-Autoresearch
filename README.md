@@ -75,16 +75,16 @@ Implemented scripts:
 - `scripts/build_report.py`
 - `scripts/launch_train.py`
 - `scripts/status.py`
+- `scripts/collect_metrics.py`
 
 ## Phase 2
 
-Phase 2 execution support is still mostly stubbed in v1. `launch_train.py` and `status.py` are the first practical operational tools; the remaining execution-oriented scripts are still placeholders.
+Phase 2 execution support is still mostly stubbed in v1. `launch_train.py`, `status.py`, and `collect_metrics.py` are the first practical operational tools; the remaining execution-oriented scripts are still placeholders.
 
 Placeholder scripts:
 
 - `scripts/launch_predict.py`
 - `scripts/launch_postprocess.py`
-- `scripts/collect_metrics.py`
 
 ## Linux Server First-Use
 
@@ -147,6 +147,22 @@ JSON mode:
 
 ```bash
 python scripts/status.py --exp runs/exp_0001_baseline_fold0_3d_fullres --json
+```
+
+## Collect Metrics
+
+`collect_metrics.py` is a conservative reader for one training run. It looks for a small set of common nnU-Net result JSON summaries, normalizes clearly identifiable validation metrics into `metrics.json`, and does not update the registry automatically. v1 only supports conservative extraction from common nnU-Net result layouts.
+
+Normal usage:
+
+```bash
+python scripts/collect_metrics.py --exp exp_0001
+```
+
+JSON mode:
+
+```bash
+python scripts/collect_metrics.py --exp runs/exp_0001_baseline_fold0_3d_fullres --json
 ```
 
 PowerShell example:
@@ -218,4 +234,4 @@ python scripts/init_experiment.py \
 - Every experiment includes `meta.yaml`, `command.sh`, `summary.md`, and `metrics.json`.
 - The registry is maintained in both `registry/experiments.jsonl` and `registry/leaderboard.csv`.
 - Reports are generated as Markdown files under `reports/`.
-- Launch, predict, postprocess, status, and metric collection automation are placeholders in v1 by design.
+- Predict and postprocess launch automation are still placeholders in v1 by design.
