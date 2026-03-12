@@ -74,16 +74,16 @@ Implemented scripts:
 - `scripts/update_registry.py`
 - `scripts/build_report.py`
 - `scripts/launch_train.py`
+- `scripts/launch_predict.py`
 - `scripts/status.py`
 - `scripts/collect_metrics.py`
 
 ## Phase 2
 
-Phase 2 execution support is still mostly stubbed in v1. `launch_train.py`, `status.py`, and `collect_metrics.py` are the first practical operational tools; the remaining execution-oriented scripts are still placeholders.
+Phase 2 execution support is still mostly stubbed in v1. `launch_train.py`, `launch_predict.py`, `status.py`, and `collect_metrics.py` are the first practical operational tools; the remaining execution-oriented scripts are still placeholders.
 
 Placeholder scripts:
 
-- `scripts/launch_predict.py`
 - `scripts/launch_postprocess.py`
 
 ## Linux Server First-Use
@@ -127,6 +127,28 @@ Foreground launch:
 
 ```bash
 python scripts/launch_train.py --exp runs/exp_0001_baseline_fold0_3d_fullres
+```
+
+## Launch Prediction
+
+`launch_predict.py` resolves an inference run folder, validates runtime config and metadata, writes the exact final `nnUNetv2_predict` command into `command.sh`, and can either dry-run, launch in detached `tmux`, or run in the foreground. v1 requires dataset runtime config keys `paths.predict_input_root` and `paths.predict_output_root`.
+
+Dry-run:
+
+```bash
+python scripts/launch_predict.py --exp exp_0004 --dry-run
+```
+
+Detached tmux launch:
+
+```bash
+python scripts/launch_predict.py --exp exp_0004 --tmux
+```
+
+Foreground launch:
+
+```bash
+python scripts/launch_predict.py --exp runs/exp_0004_fold0_validation_inference
 ```
 
 ## Inspect Status
@@ -236,4 +258,4 @@ python scripts/init_experiment.py \
 - Every experiment includes `meta.yaml`, `command.sh`, `summary.md`, and `metrics.json`.
 - The registry is maintained in both `registry/experiments.jsonl` and `registry/leaderboard.csv`.
 - Reports are generated as Markdown files under `reports/`.
-- Predict and postprocess launch automation are still placeholders in v1 by design.
+- Postprocess launch automation is still a placeholder in v1 by design.
