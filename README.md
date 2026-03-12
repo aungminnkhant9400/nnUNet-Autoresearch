@@ -74,14 +74,14 @@ Implemented scripts:
 - `scripts/update_registry.py`
 - `scripts/build_report.py`
 - `scripts/launch_train.py`
+- `scripts/status.py`
 
 ## Phase 2
 
-Phase 2 execution support is still mostly stubbed in v1. `launch_train.py` is the first practical launcher; the remaining execution-oriented scripts are still placeholders.
+Phase 2 execution support is still mostly stubbed in v1. `launch_train.py` and `status.py` are the first practical operational tools; the remaining execution-oriented scripts are still placeholders.
 
 Placeholder scripts:
 
-- `scripts/status.py`
 - `scripts/launch_predict.py`
 - `scripts/launch_postprocess.py`
 - `scripts/collect_metrics.py`
@@ -125,6 +125,28 @@ Foreground launch:
 
 ```bash
 python scripts/launch_train.py --exp runs/exp_0001_baseline_fold0_3d_fullres
+```
+
+## Inspect Status
+
+`status.py` is a read-only inspector for one run folder. It reports current metadata, artifact presence, tmux visibility, recent log tails, and a simple inferred operational label without mutating any files.
+
+Human-readable mode:
+
+```bash
+python scripts/status.py --exp exp_0001
+```
+
+Custom tail length:
+
+```bash
+python scripts/status.py --exp exp_0001 --tail 40
+```
+
+JSON mode:
+
+```bash
+python scripts/status.py --exp runs/exp_0001_baseline_fold0_3d_fullres --json
 ```
 
 PowerShell example:
