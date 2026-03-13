@@ -54,6 +54,7 @@ nnunet-autoresearch/
 |   |-- launch_predict.py
 |   |-- evaluate_predictions.py
 |   |-- run_autoresearch.py
+|   |-- apply_postprocess.py
 |   |-- launch_postprocess.py
 |   `-- collect_metrics.py
 `-- templates/
@@ -79,12 +80,13 @@ Implemented scripts:
 - `scripts/launch_predict.py`
 - `scripts/evaluate_predictions.py`
 - `scripts/run_autoresearch.py`
+- `scripts/apply_postprocess.py`
 - `scripts/status.py`
 - `scripts/collect_metrics.py`
 
 ## Phase 2
 
-Phase 2 execution support is still mostly stubbed in v1. `launch_train.py`, `launch_predict.py`, `evaluate_predictions.py`, `run_autoresearch.py`, `status.py`, and `collect_metrics.py` are the first practical operational tools; the remaining execution-oriented scripts are still placeholders.
+Phase 2 execution support is still mostly stubbed in v1. `launch_train.py`, `launch_predict.py`, `evaluate_predictions.py`, `run_autoresearch.py`, `apply_postprocess.py`, `status.py`, and `collect_metrics.py` are the first practical operational tools; the remaining execution-oriented scripts are still placeholders.
 
 Placeholder scripts:
 
@@ -200,6 +202,34 @@ python scripts/run_autoresearch.py --baseline-exp runs/exp_0004_fold0_validation
 ```
 
 Foreground mode can finish the candidate launch, evaluation, and comparison in one run. Tmux mode launches the candidate inference and stops with clear next steps; evaluation and comparison must be completed later after prediction finishes.
+
+## Apply Postprocess
+
+`apply_postprocess.py` applies simple connected-component postprocessing to `.nii.gz` prediction masks only. v1 treats all nonzero voxels as foreground and writes processed masks to a separate output directory.
+
+No-op binary rewrite:
+
+```bash
+python scripts/apply_postprocess.py --input-dir runs/exp_0004_fold0_validation_inference/artifacts/predictions --output-dir runs/exp_0005_post_none/artifacts/predictions --mode none
+```
+
+Keep only the largest component:
+
+```bash
+python scripts/apply_postprocess.py --input-dir runs/exp_0004_fold0_validation_inference/artifacts/predictions --output-dir runs/exp_0005_post_largest/artifacts/predictions --mode largest_component
+```
+
+Remove components smaller than a threshold:
+
+```bash
+python scripts/apply_postprocess.py --input-dir runs/exp_0004_fold0_validation_inference/artifacts/predictions --output-dir runs/exp_0005_post_min100/artifacts/predictions --mode min_component_size --min-size 100
+```
+
+Keep the largest k components:
+
+```bash
+python scripts/apply_postprocess.py --input-dir runs/exp_0004_fold0_validation_inference/artifacts/predictions --output-dir runs/exp_0005_post_top2/artifacts/predictions --mode largest_k_components --top-k 2
+```
 
 ## Inspect Status
 
