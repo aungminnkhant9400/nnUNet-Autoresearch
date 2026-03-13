@@ -22,10 +22,18 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Evaluate one inference run against labelsTr using binary Dice."
     )
-    parser.add_argument(
+    input_group = parser.add_mutually_exclusive_group(required=True)
+    input_group.add_argument(
         "--exp",
-        required=True,
         help="Experiment id such as exp_0004 or a run folder path.",
+    )
+    input_group.add_argument(
+        "--prediction-dir",
+        help="Direct prediction directory to evaluate without a run folder.",
+    )
+    parser.add_argument(
+        "--dataset-key",
+        help="Dataset key for direct prediction-dir mode.",
     )
     parser.add_argument(
         "--json",
@@ -144,6 +152,13 @@ def resolve_paths(
 ) -> tuple[Path, Path]:
     """Resolve the prediction directory and labelsTr directory."""
     prediction_dir = run_dir / "artifacts" / "predictions"
+    return resolve_prediction_and_gt_dirs(prediction_dir, dataset_id, global_config)
+
+
+def resolve_prediction_and_gt_dirs(
+    prediction_dir: Path, dataset_id: str, global_config: dict[str, Any]
+) -> tuple[Path, Path]:
+    """Resolve the prediction directory and labelsTr directory."""
     if not prediction_dir.exists() or not prediction_dir.is_dir():
         raise FileNotFoundError(f"Prediction directory does not exist: {prediction_dir}")
 
@@ -318,28 +333,67 @@ def render_text(payload: dict[str, Any], verbose: bool) -> str:
     return "\n".join(lines)
 
 
+def resolve_evaluation_context(
+    args: argparse.Namespace, root: Path
+) -> tuple[str | None, Path | None, Path, str, Path, Path]:
+    """Resolve shared evaluation inputs for experiment or direct mode."""
+    global_config = load_global_config(root)
+
+    if args.exp:
+        run_dir = resolve_experiment_path(args.exp, root)
+        meta_path = run_dir / "meta.yaml"
+        if not meta_path.exists():
+            raise FileNotFoundError(f"Missing meta.yaml in run folder: {run_dir}")
+
+        meta = load_yaml(meta_path)
+        if str(meta.get("task_type", "")).strip() != "inference":
+            raise ValueError(
+                "evaluate_predictions.py only supports experiments with task_type=inference"
+            )
+
+        experiment_id = require_text(meta, "experiment_id", "meta.yaml field")
+        dataset_key = require_text(meta, "dataset_key", "meta.yaml field")
+        dataset_config = load_dataset_config(root, dataset_key)
+        dataset_id = require_text(dataset_config, "dataset_id", "dataset config field")
+        prediction_dir, ground_truth_dir = resolve_paths(run_dir, dataset_id, global_config)
+        output_path = run_dir / "evaluation.json"
+        return (
+            experiment_id,
+            run_dir,
+            prediction_dir,
+            dataset_id,
+            ground_truth_dir,
+            output_path,
+        )
+
+    if not args.dataset_key:
+        raise ValueError("--dataset-key is required when using --prediction-dir")
+
+    prediction_dir = Path(args.prediction_dir).expanduser().resolve()
+    if not prediction_dir.exists() or not prediction_dir.is_dir():
+        raise FileNotFoundError(f"Prediction directory does not exist: {prediction_dir}")
+
+    dataset_config = load_dataset_config(root, args.dataset_key)
+    dataset_id = require_text(dataset_config, "dataset_id", "dataset config field")
+    prediction_dir, ground_truth_dir = resolve_prediction_and_gt_dirs(
+        prediction_dir, dataset_id, global_config
+    )
+    output_path = prediction_dir / "evaluation.json"
+    return None, None, prediction_dir, dataset_id, ground_truth_dir, output_path
+
+
 def main() -> int:
     """Evaluate one inference run and write evaluation.json."""
     args = parse_args()
     root = project_root()
-    run_dir = resolve_experiment_path(args.exp, root)
-    meta_path = run_dir / "meta.yaml"
-    if not meta_path.exists():
-        raise FileNotFoundError(f"Missing meta.yaml in run folder: {run_dir}")
-
-    meta = load_yaml(meta_path)
-    if str(meta.get("task_type", "")).strip() != "inference":
-        raise ValueError(
-            "evaluate_predictions.py only supports experiments with task_type=inference"
-        )
-
-    experiment_id = require_text(meta, "experiment_id", "meta.yaml field")
-    dataset_key = require_text(meta, "dataset_key", "meta.yaml field")
-    global_config = load_global_config(root)
-    dataset_config = load_dataset_config(root, dataset_key)
-    dataset_id = require_text(dataset_config, "dataset_id", "dataset config field")
-
-    prediction_dir, ground_truth_dir = resolve_paths(run_dir, dataset_id, global_config)
+    (
+        experiment_id,
+        run_dir,
+        prediction_dir,
+        dataset_id,
+        ground_truth_dir,
+        output_path,
+    ) = resolve_evaluation_context(args, root)
     prediction_files = list_prediction_files(prediction_dir)
     sitk = ensure_simpleitk()
 
@@ -359,7 +413,7 @@ def main() -> int:
         ground_truth_dir=ground_truth_dir,
         per_case=per_case,
     )
-    write_json(run_dir / "evaluation.json", payload)
+    write_json(output_path, payload)
 
     if args.json:
         print(json.dumps(payload, indent=2))

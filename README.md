@@ -161,7 +161,7 @@ python scripts/launch_predict.py --exp runs/exp_0004_fold0_validation_inference
 
 `evaluate_predictions.py` evaluates one inference run against `labelsTr`, computes per-case binary Dice, and writes `evaluation.json` in the run folder. v1 computes binary Dice only and treats all nonzero voxels as foreground.
 
-Normal usage:
+Experiment mode:
 
 ```bash
 python scripts/evaluate_predictions.py --exp exp_0004
@@ -177,6 +177,18 @@ JSON mode:
 
 ```bash
 python scripts/evaluate_predictions.py --exp runs/exp_0004_fold0_validation_inference --json
+```
+
+Direct prediction-directory mode:
+
+```bash
+python scripts/evaluate_predictions.py --prediction-dir runs/exp_0005_post_largest/artifacts/predictions --dataset-key psma5mm
+```
+
+Direct JSON mode:
+
+```bash
+python scripts/evaluate_predictions.py --prediction-dir runs/exp_0005_post_largest/artifacts/predictions --dataset-key psma5mm --json
 ```
 
 ## Run Autoresearch
