@@ -53,6 +53,7 @@ nnunet-autoresearch/
 |   |-- launch_train.py
 |   |-- launch_predict.py
 |   |-- evaluate_predictions.py
+|   |-- run_autoresearch.py
 |   |-- launch_postprocess.py
 |   `-- collect_metrics.py
 `-- templates/
@@ -77,12 +78,13 @@ Implemented scripts:
 - `scripts/launch_train.py`
 - `scripts/launch_predict.py`
 - `scripts/evaluate_predictions.py`
+- `scripts/run_autoresearch.py`
 - `scripts/status.py`
 - `scripts/collect_metrics.py`
 
 ## Phase 2
 
-Phase 2 execution support is still mostly stubbed in v1. `launch_train.py`, `launch_predict.py`, `evaluate_predictions.py`, `status.py`, and `collect_metrics.py` are the first practical operational tools; the remaining execution-oriented scripts are still placeholders.
+Phase 2 execution support is still mostly stubbed in v1. `launch_train.py`, `launch_predict.py`, `evaluate_predictions.py`, `run_autoresearch.py`, `status.py`, and `collect_metrics.py` are the first practical operational tools; the remaining execution-oriented scripts are still placeholders.
 
 Placeholder scripts:
 
@@ -174,6 +176,30 @@ JSON mode:
 ```bash
 python scripts/evaluate_predictions.py --exp runs/exp_0004_fold0_validation_inference --json
 ```
+
+## Run Autoresearch
+
+`run_autoresearch.py` is a narrow controller for checkpoint comparison only. v1 supports one mode: create a sibling inference experiment with a different checkpoint, launch prediction, evaluate it, and compare the candidate against a baseline inference experiment.
+
+Dry-run:
+
+```bash
+python scripts/run_autoresearch.py --baseline-exp exp_0004 --candidate-checkpoint checkpoint_final.pth --dry-run
+```
+
+Detached tmux launch:
+
+```bash
+python scripts/run_autoresearch.py --baseline-exp exp_0004 --candidate-checkpoint checkpoint_final.pth --tmux
+```
+
+Foreground launch:
+
+```bash
+python scripts/run_autoresearch.py --baseline-exp runs/exp_0004_fold0_validation_inference --candidate-checkpoint checkpoint_final.pth
+```
+
+Foreground mode can finish the candidate launch, evaluation, and comparison in one run. Tmux mode launches the candidate inference and stops with clear next steps; evaluation and comparison must be completed later after prediction finishes.
 
 ## Inspect Status
 
